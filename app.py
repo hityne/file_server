@@ -122,4 +122,4 @@ if __name__ == '__main__':
     # 运行应用
     print(f"浏览目录：{DOWNLOAD_FOLDER}")
     print("访问 http://127.0.0.1:5000 查看文件列表")
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
