@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>文件浏览器 - {{ current_path }}</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      background-color: #f0f5f5; /* 淡蓝色背景 */
+    }
+
+    .file-icon {
+      font-size: 24px;
+      margin-right: 10px;
+    }
+
+    .header {
+      background: linear-gradient(to right, #e0f7fa, #e8f5e9); /* 淡蓝色到淡绿色的渐变 */ 
+      border-bottom: 1px solid #dee2e6;
+      padding: 15px 20px;
+      text-align: left;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      font-weight: 500;
+      color: #343a40;
+    }
+
+    .header .btn {
+      margin-left: 20px;
+    }
+
+    .folder-link {
+      color: #007bff;
+    }
+
+    .download-btn {
+      background-color: #28a745;
+      border-color: #28a745;
+      color: white;
+    }
+
+    .download-btn:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+
+    .list-group { /* 文件夹列表样式 */
+      background-color: #f8f9fa; /* 柔和的灰色背景 */
+      border-radius: 5px;
+      padding: 15px;
+    }
+
+    .list-group-item {
+      background-color: transparent; /* 透明背景 */
+      border: none;
+      padding: 5px 10px; /* 调整 padding */
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: rgba(0,0,0,.05);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header class="header mb-4">
+      <div class="container">
+        <h1><i class="fas fa-folder-open"></i> 文件浏览器 - {{ current_path }}</h1>
+        {% if current_path %}
+          <a href="{{ url_for('browse_files', path=os.path.dirname(current_path) or '/') }}" class="btn btn-light">[返回上一级]</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <main>
+      {% if folders %}
+      <h2>文件夹</h2>
+      <ul class="list-group"> 
+        {% for folder in folders %}
+          <li class="list-group-item"> 
+            <a href="{{ url_for('browse_files', path=os.path.relpath(folder.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" class="folder-link">
+              <i class="fas fa-folder file-icon"></i> {{ folder.name }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if files %}
+      <h2>文件</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>文件名</th>
+            <th>大小</th>
+            <th>修改时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+          <tr>
+            <td>{{ file.name }}</td>
+            <td>{{ file.size }}</td>
+            <td>{{ file.mtime }}</td>
+            <td>
+              <a href="{{ url_for('download_file', filename=os.path.relpath(file.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" class="btn download-btn">下载</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      {% if not folders and not files %}
+      <p>目录为空或不可访问</p>
+      {% endif %}
+    </main>
+  </div>
+</body>
+</html>
