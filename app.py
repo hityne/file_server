@@ -19,9 +19,8 @@ def get_directory_contents(directory):
     folders = []
     try:
         for entry in os.listdir(directory):
-            if entry.startswith('.'):  # 跳过以 . 开头的文件和文件夹
+            if entry.startswith('.') or entry.startswith('_'):  # 跳过以 . 开头的文件和文件夹
                 continue
-
             entry_path = os.path.join(directory, entry)
             if os.path.isfile(entry_path):
                 file_stats = os.stat(entry_path)
