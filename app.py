@@ -1,7 +1,7 @@
 import os, sys
 from flask import Flask, render_template, send_from_directory, abort, request, current_app
 from builtins import len  # 导入 len 函数
-import time
+import time, datetime
 
 app = Flask(__name__)
 
@@ -19,14 +19,22 @@ def get_directory_contents(directory):
     folders = []
     try:
         for entry in os.listdir(directory):
-            if entry.startswith('.') or entry.startswith('_'):  # 跳过以 . 开头的文件和文件夹
+            if entry.startswith('.') or entry.startswith('_') or entry.startswith('$'):  # 跳过以 . 开头的文件和文件夹
                 continue
             entry_path = os.path.join(directory, entry)
             if os.path.isfile(entry_path):
                 file_stats = os.stat(entry_path)
+                file_size = file_stats.st_size
+                
+                # 根据文件大小显示不同的单位并添加千分符
+                if file_size < 1024 * 1024:  # 小于1MB
+                    size_str = f"{file_size / 1024:,.2f} KB"
+                else:  # 大于等于1MB
+                    size_str = f"{file_size / (1024 * 1024):,.2f} MB"
+                
                 files.append({
                     'name': entry,
-                    'size': f"{file_stats.st_size / 1024:.2f} KB",
+                    'size': size_str,
                     'mtime': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(file_stats.st_mtime)),  # 添加修改时间
                     'path': entry_path
                 })
@@ -63,8 +71,13 @@ def browse_files(path):
         return "指定的路径不是一个目录", 404
     
     files, folders = get_directory_contents(current_directory)
+
+    visitor_ip = request.remote_addr
     
-    return render_template('file_list.html', files=files, folders=folders, current_path=path, app=current_app)
+    # 获取当前时间（精确到秒）
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    return render_template('main.html', files=files, folders=folders, current_path=path, visitor_ip=visitor_ip, current_time=current_time, app=current_app)
 
 
 @app.route('/download/<path:filename>')
