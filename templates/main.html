@@ -88,7 +88,7 @@
     <footer class="site-footer">
         <div class="footer-bottom d-flex justify-content-between align-items-center">
             <p class="mb-0">&copy; 2024 文件服务器 | 保留所有权利</p>
-            <p class="mb-0 ms-3">访问者 IP: {{ visitor_ip }} | 当前时间: <span id="current-time">{{ current_time }}</span></p>
+            <p class="mb-0 ms-3">访问者 IP: {{ visitor_ip }} | 当前时间: <span id="current-time"></span></p>
         </div>
     </footer>
 </body>
@@ -99,7 +99,7 @@
     const now = new Date();
     currentTimeElement.textContent = now.toLocaleString();
 }
-
+updateCurrentTime()
 setInterval(updateCurrentTime, 1000);
 </script>
 </html>
