@@ -4,8 +4,16 @@
     --background-color: #f4f6f7;
     --text-color: #2c3e50;
     --footer-bg-color: #34495e;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
 }
 
+/* Base styles */
 body {
     font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
     background-color: var(--background-color);
@@ -16,69 +24,71 @@ body {
     min-height: 100vh;
 }
 
+/* Layout containers */
 .file-browser-container {
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-    padding: 2rem;
-    flex-grow: 1;
+    padding: var(--spacing-xl);
+    flex: 1 0 auto;
     margin-bottom: 50px;
 }
 
+/* Typography */
 .page-title {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--spacing-lg);
     font-size: 2rem;
     color: var(--primary-color);
     font-weight: 600;
 }
 
+/* Header styles */
 .file-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding: 1rem;
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-md);
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
 }
 
 .file-header h1 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 500;
-    display: flex;
-    align-items: center;
 }
 
-.file-header h1 a{
+.file-header h1 a {
     color: aliceblue;
     text-decoration: none;
 }
 
-
-.folder-section, .file-section {
+/* Folder and File sections */
+.folder-section,
+.file-section {
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
 }
 
 .folder-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    gap: var(--spacing-md);
 }
 
 .folder-item {
     display: flex;
     align-items: center;
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
     background-color: var(--background-color);
-    border-radius: 6px;
+    border-radius: var(--border-radius);
     transition: background-color 0.3s ease;
 }
 
@@ -88,10 +98,11 @@ body {
 
 .folder-item i {
     color: var(--primary-color);
-    margin-right: 0.75rem;
+    margin-right: var(--spacing-sm);
     font-size: 1.25rem;
 }
 
+/* File table styles */
 .file-table {
     width: 100%;
     border-collapse: separate;
@@ -102,73 +113,57 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     font-weight: 500;
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
 }
 
 .file-table td {
     background-color: white;
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
     vertical-align: middle;
 }
 
 .file-table tr {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius);
     overflow: hidden;
 }
 
+.empty-state i{
+    font-size: 3rem; 
+    color: #bdc3c7;
+}
+
+/* Button styles */
 .download-btn {
     background-color: var(--secondary-color);
     color: white;
     border: none;
     border-radius: 4px;
-    transition: background-color 0.3s ease;
-    font-size: 0.875rem;
     padding: 0.35rem 0.5rem;
+    font-size: 0.875rem;
+    transition: background-color 0.3s ease;
 }
 
 .download-btn:hover {
     background-color: #27ae60;
 }
 
-td a{
-    text-decoration: none;
-}
-.folder-item a{
+/* Links */
+.folder-item a,
+td a {
     text-decoration: none;
 }
 
+/* Empty state */
 .empty-state {
     text-align: center;
     color: #7f8c8d;
-    padding: 2rem;
+    padding: var(--spacing-xl);
     background-color: white;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
 }
 
-
-
-@media (max-width: 768px) {
-    .file-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .folder-list {
-        grid-template-columns: 1fr;
-    }
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.file-browser-container {
-    flex: 1 0 auto;
-}
-
+/* Footer styles */
 .site-footer {
     flex-shrink: 0;
     position: fixed;
@@ -177,111 +172,46 @@ body {
     z-index: 1000;
     background-color: var(--footer-bg-color);
     color: white;
-    padding: 1rem 0;
-    margin-top: 2rem;
+    padding: var(--spacing-md) 0;
+    margin-top: var(--spacing-xl);
 }
 
 .footer-bottom {
     display: flex;
-    flex-direction: column;  /* Change from row to column */
+    flex-direction: column;
     justify-content: center;
-    align-items: center;     /* Center horizontally */
+    align-items: center;
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
     font-size: 0.9rem;
-    text-align: center;      /* Ensure text is centered */
+    text-align: center;
 }
 
 .footer-bottom p {
-    margin-bottom: 0.5rem;   /* Add some vertical spacing between p tags */
-    margin-right: 0;         /* Remove horizontal margin */
+    margin-bottom: 0.5rem;
+    margin-right: 0;
 }
 
-header.file-header {
-    display: flex; 
-    align-items: center; 
-    flex-wrap: wrap; /* 允许 flex 容器中的项目换行 */
-}
-
-header.file-header h1 { 
-    text-align: left; 
-    flex-grow: 1;
-    margin-right: 10px; /* 添加右边距 */
-}
-
-@media (max-width: 600px) { /* 当屏幕宽度小于 600px 时 */
-    header.file-header h1 {
-        flex-basis: 100%; /* 设置 h1 占据 100% 宽度 */
-        margin-right: 0; /* 移除右边距 */
-        margin-bottom: 10px; /* 添加下边距 */
-    }
-
-    header.file-header a.back-button {
-        flex-basis: 100%; /* 设置返回按钮占据 100% 宽度 */
-    }
-}
-
-.file-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.file-header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    max-width: 80%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.file-header h1 a {
-    color: aliceblue;
-    text-decoration: none;
-}
-
+/* Media queries */
 @media (max-width: 768px) {
+    .folder-list {
+        grid-template-columns: 1fr;
+    }
+
     .file-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        text-align: center;
     }
 
     .file-header h1 {
-        max-width: 100%;
-        white-space: normal;
-        overflow: visible;
-        text-overflow: clip;
+        margin-bottom: var(--spacing-md);
+        text-align: center;
     }
 
-    .file-header a.back-button {
-        margin-top: 1rem;
-    }
-}
-
-.file-header h1 {
-    max-width: 80%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media (max-width: 768px) {
-    .file-header h1 {
-        flex-direction: column;
-        max-width: 100%;
+    .file-header h1 a {
         white-space: normal;
-        overflow: visible;
-        text-overflow: clip;
+        word-break: break-word;
     }
 }
