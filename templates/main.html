@@ -17,13 +17,17 @@
         <div class="page-title">文件服务器</div>
         <header class="file-header">
             <h1>
-                <i class="fas fa-folder-open"></i>
-                路径 - {{ current_path }}
+                <a href="{{ url_for('browse_files', path='/') }}">根目录/</a>
+                {% for part in current_path.split('/') %}
+                    {% if loop.last %}
+                        <a href="{{ url_for('browse_files', path=current_path) }}">{{ part }}</a>
+                    {% else %}
+                        <a href="{{ url_for('browse_files', path='/'.join(current_path.split('/')[0:loop.index])) }}">{{ part }}/</a> 
+                    {% endif %}
+                {% endfor %}
             </h1>
             {% if current_path %}
-                <a href="{{ url_for('browse_files', path=os.path.dirname(current_path) or '/') }}" class="btn btn-light">
-                    <i class="fas fa-arrow-left"></i> 返回上一级
-                </a>
+                <a href="{{ url_for('browse_files', path=os.path.dirname(current_path) or '/') }}" class="back-button btn btn-light">返回</a>
             {% endif %}
         </header>
 

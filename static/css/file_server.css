@@ -53,9 +53,11 @@ body {
     align-items: center;
 }
 
-.file-header h1 i {
-    margin-right: 0.75rem;
+.file-header h1 a{
+    color: aliceblue;
+    text-decoration: none;
 }
+
 
 .folder-section, .file-section {
     background-color: white;
@@ -194,4 +196,92 @@ body {
 .footer-bottom p {
     margin-bottom: 0.5rem;   /* Add some vertical spacing between p tags */
     margin-right: 0;         /* Remove horizontal margin */
+}
+
+header.file-header {
+    display: flex; 
+    align-items: center; 
+    flex-wrap: wrap; /* 允许 flex 容器中的项目换行 */
+}
+
+header.file-header h1 { 
+    text-align: left; 
+    flex-grow: 1;
+    margin-right: 10px; /* 添加右边距 */
+}
+
+@media (max-width: 600px) { /* 当屏幕宽度小于 600px 时 */
+    header.file-header h1 {
+        flex-basis: 100%; /* 设置 h1 占据 100% 宽度 */
+        margin-right: 0; /* 移除右边距 */
+        margin-bottom: 10px; /* 添加下边距 */
+    }
+
+    header.file-header a.back-button {
+        flex-basis: 100%; /* 设置返回按钮占据 100% 宽度 */
+    }
+}
+
+.file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.file-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-header h1 a {
+    color: aliceblue;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .file-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .file-header h1 {
+        max-width: 100%;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    .file-header a.back-button {
+        margin-top: 1rem;
+    }
+}
+
+.file-header h1 {
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+    .file-header h1 {
+        flex-direction: column;
+        max-width: 100%;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
 }
