@@ -4,106 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文件服务器 - {{ current_path }}</title>
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"> -->
+    <!-- CSS 资源 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/file_server.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        
-    </style>
 </head>
 <body>
+    <!-- 主容器 -->
     <div class="file-browser-container">
+        <!-- 页面标题 -->
         <div class="page-title">文件服务器</div>
+
+        <!-- 导航头部 -->
         <header class="file-header">
             <h1>
                 <a href="{{ url_for('browse_files', path='/') }}">根目录/</a>
                 {% for part in current_path.split('/') %}
                     {% if loop.last %}
-                        <a href="{{ url_for('browse_files', path=current_path) }}">{{ part }}</a>
+                        <a href="{{ url_for('browse_files', path=current_path) }}">
+                            {{- part -}}
+                        </a>
                     {% else %}
-                        <a href="{{ url_for('browse_files', path='/'.join(current_path.split('/')[0:loop.index])) }}">{{ part }}/</a> 
+                        <a href="{{ url_for('browse_files', path='/'.join(current_path.split('/')[0:loop.index])) }}">
+                            {{- part -}}/
+                        </a>
                     {% endif %}
                 {% endfor %}
             </h1>
             {% if current_path %}
-                <a href="{{ url_for('browse_files', path=os.path.dirname(current_path) or '/') }}" class="back-button btn btn-light">返回</a>
+                <a href="{{ url_for('browse_files', path=os.path.dirname(current_path) or '/') }}" 
+                   class="back-button btn btn-light">
+                    返回
+                </a>
             {% endif %}
         </header>
 
+        <!-- 主要内容区 -->
         <main>
+            <!-- 文件夹区域 -->
             {% if folders %}
-            <section class="folder-section">
-                <h2 class="mb-3">文件夹</h2>
-                <div class="folder-list">
-                    {% for folder in folders %}
-                    <div class="folder-item">
-                        <a href="{{ url_for('browse_files', path=os.path.relpath(folder.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}">
-                            <i class="fas fa-folder"></i>
-                            {{ folder.name }}
-                        </a>
+                <section class="folder-section">
+                    <h2 class="mb-3">文件夹</h2>
+                    <div class="folder-list">
+                        {% for folder in folders %}
+                            <div class="folder-item">
+                                <a href="{{ url_for('browse_files', 
+                                                   path=os.path.relpath(folder.path, 
+                                                                      app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}">
+                                    <i class="fas fa-folder"></i>
+                                    {{- folder.name -}}
+                                </a>
+                            </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
-            </section>
+                </section>
             {% endif %}
 
+            <!-- 文件列表区域 -->
             {% if files %}
-            <section class="file-section">
-                <h2 class="mb-3">文件</h2>
-                <div class="table-responsive">
-                    <table class="file-table">
-                        <thead>
-                            <tr>
-                                <th>文件名</th>
-                                <th>大小</th>
-                                <th>修改时间</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for file in files %}
-                            <tr>
-                                <td>{{ file.name }}</td>
-                                <td>{{ file.size }}</td>
-                                <td>{{ file.mtime }}</td>
-                                <td>
-                                    <a href="{{ url_for('download_file', filename=os.path.relpath(file.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" class="download-btn">
-                                        <i class="fas fa-download"></i> 下载
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <section class="file-section">
+                    <h2 class="mb-3">文件</h2>
+                    <div class="table-responsive">
+                        <table class="file-table">
+                            <thead>
+                                <tr>
+                                    <th>文件名</th>
+                                    <th>大小</th>
+                                    <th>修改时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in files %}
+                                    <tr>
+                                        <td>{{ file.name }}</td>
+                                        <td>{{ file.size }}</td>
+                                        <td>{{ file.mtime }}</td>
+                                        <td>
+                                            <a href="{{ url_for('download_file', 
+                                                               filename=os.path.relpath(file.path, 
+                                                                                      app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" 
+                                               class="download-btn">
+                                                <i class="fas fa-download"></i> 下载
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             {% endif %}
 
+            <!-- 空状态显示 -->
             {% if not folders and not files %}
-            <div class="empty-state">
-                <i class="fas fa-folder-open"></i>
-                <p class="mt-3">目录为空或不可访问</p>
-            </div>
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p class="mt-3">目录为空或不可访问</p>
+                </div>
             {% endif %}
         </main>
     </div>
 
+    <!-- 页脚 -->
     <footer class="site-footer">
         <div class="footer-bottom d-flex justify-content-between align-items-center">
             <p class="mb-0">&copy; 2024 文件服务器 | 保留所有权利</p>
             <p class="mb-0 ms-3">访问者 IP: {{ visitor_ip }} | 当前时间: <span id="current-time"></span></p>
         </div>
     </footer>
-</body>
 
-<script>
-    function updateCurrentTime() {
-    const currentTimeElement = document.getElementById('current-time');
-    const now = new Date();
-    currentTimeElement.textContent = now.toLocaleString();
-}
-updateCurrentTime()
-setInterval(updateCurrentTime, 1000);
-</script>
+    <!-- JavaScript -->
+    <script>
+        function updateCurrentTime() {
+            const currentTimeElement = document.getElementById('current-time');
+            const now = new Date();
+            const options = { 
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            currentTimeElement.textContent = now.toLocaleString('zh-CN', options);
+        }
+
+        // 初始化时间显示
+        updateCurrentTime();
+        // 定时更新
+        setInterval(updateCurrentTime, 1000);
+    </script>
+</body>
 </html>
