@@ -109,17 +109,17 @@ body {
     border-spacing: 0 0.5rem;
 }
 
+.file-table th,
+.file-table td {
+    text-align: left;
+    padding: var(--spacing-sm);
+    vertical-align: middle;
+}
+
 .file-table th {
     background-color: var(--background-color);
     color: var(--text-color);
     font-weight: 500;
-    padding: var(--spacing-sm);
-}
-
-.file-table td {
-    background-color: white;
-    padding: var(--spacing-sm);
-    vertical-align: middle;
 }
 
 .file-table tr {
@@ -128,39 +128,91 @@ body {
     overflow: hidden;
 }
 
-.empty-state i{
-    font-size: 3rem; 
-    color: #bdc3c7;
+/* 文件表格列宽调整 */
+.file-table th:first-child {
+    width: 35%;        /* 文件名列宽度 */
 }
 
-/* Button styles */
-.download-btn {
-    background-color: var(--secondary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.875rem;
-    transition: background-color 0.3s ease;
+.file-table th:nth-child(2) {
+    width: 15%;        /* 大小列宽度 */
 }
 
-.download-btn:hover {
-    background-color: #27ae60;
+.file-table th:nth-child(3) {
+    width: 25%;        /* 修改时间列宽度 */
 }
 
-/* Links */
-.folder-item a,
-td a {
-    text-decoration: none;
+.file-table th:last-child {
+    width: 25%;        /* 操作列宽度 */
 }
 
-/* Empty state */
+/* 空状态样式 */
 .empty-state {
     text-align: center;
     color: #7f8c8d;
     padding: var(--spacing-xl);
     background-color: white;
     border-radius: var(--border-radius);
+}
+
+.empty-state i {
+    font-size: 3rem; 
+    color: #bdc3c7;
+}
+
+/* 操作按钮样式 */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;  /* 左对齐 */
+}
+
+.download-btn, .delete-btn {
+    padding: 0.35rem 1rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    white-space: nowrap;
+    height: 32px;
+    min-width: 76px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.download-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.download-btn:hover {
+    background-color: #45a049;
+    color: white;
+    text-decoration: none;
+}
+
+.delete-btn {
+    background-color: #ff5252;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #f72d2d;
+    color: white;
+}
+
+/* 去除按钮的默认焦点样式 */
+.download-btn:focus, .delete-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Links */
+.folder-item a,
+td a {
+    text-decoration: none;
 }
 
 /* Footer styles */
@@ -214,67 +266,65 @@ td a {
         white-space: normal;
         word-break: break-word;
     }
+
+    .action-buttons {
+        gap: 0.35rem;
+    }
+
+    .download-btn, .delete-btn {
+        padding: 0.35rem 0.75rem;
+        min-width: 70px;
+    }
 }
 
-/* 文件表格列宽调整 */
-.file-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 0.5rem;
-}
-
-.file-table th:first-child {
-    width: 35%;        /* 文件名列宽度 */
-}
-
-.file-table th:nth-child(2) {
-    width: 15%;        /* 大小列宽度 */
-}
-
-.file-table th:nth-child(3) {
-    width: 25%;        /* 修改时间列宽度 */
-}
-
-.file-table th:last-child {
-    width: 25%;        /* 操作列宽度 */
-}
-
-/* 操作按钮样式 */
-.action-buttons {
+/* 文件夹项样式更新 */
+.folder-item {
     display: flex;
-    gap: 0.5rem;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s ease;
+    position: relative;  /* 为删除图标定位 */
+}
+
+.folder-item:hover {
+    background-color: #e9ecef;
+}
+
+.folder-item i {
+    color: var(--primary-color);
+    margin-right: var(--spacing-sm);
+    font-size: 1.25rem;
+}
+
+.folder-item a {
+    text-decoration: none;
+    flex-grow: 1;
+}
+
+/* 删除图标样式 */
+.folder-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #ff5252;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border: none;
+    background: none;
+    padding: 4px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
 
-.download-btn, .delete-btn {
-    padding: 0.35rem 1rem;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    text-decoration: none;
-    white-space: nowrap;
-    height: 32px;
-    min-width: 76px;
+.folder-item:hover .folder-delete {
+    opacity: 1;
 }
 
-.download-btn {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.download-btn:hover {
-    background-color: #27ae60;
-    color: white;
-}
-
-.delete-btn {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.delete-btn:hover {
-    background-color: #c0392b;
-    color: white;
+.folder-delete:hover {
+    transform: scale(1.1);
 }
