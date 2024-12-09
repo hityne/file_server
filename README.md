@@ -14,6 +14,6 @@ Flask架构
 1. 克隆项目 `git clone https://gitee.com/hityne/file_server.git`
 2. 建立Python环境 `pip install -r requirements.txt`
 3. 运行 `python app.py /root/files`,其中/root/files替换为需要的路径
-4. 访问 `http://127.0.0.1:500`
+4. 访问 `http://127.0.0.1:5000`
 
 
