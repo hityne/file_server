@@ -1,7 +1,7 @@
 import os, sys
 from flask import Flask, render_template, send_from_directory, abort, request, current_app
 from builtins import len  # 导入 len 函数
-import time, datetime
+import time, datetime, shutil
 
 app = Flask(__name__)
 
@@ -107,6 +107,64 @@ def download_file(filename):
     except FileNotFoundError:
         return "文件未找到", 404
 
+# 在 app.py 中添加新的路由和功能
+
+@app.route('/delete/<path:filename>', methods=['POST'])
+def delete_file(filename):
+    """
+    删除文件
+    
+    Args:
+        filename (str): 要删除的文件名
+    
+    Returns:
+        JSON响应
+    """
+    directory = app.config['DOWNLOAD_FOLDER']
+    filename = filename.replace("\\", "/")  # 将反斜杠替换为正斜杠
+    filepath = os.path.normpath(os.path.join(directory, filename))
+    
+    # 安全检查：确保要删除的文件在指定目录内
+    if not filepath.startswith(directory):
+        return {"success": False, "message": "访问被拒绝"}, 403
+    
+    try:
+        if os.path.exists(filepath) and os.path.isfile(filepath):
+            os.remove(filepath)
+            return {"success": True, "message": "文件已删除"}
+        else:
+            return {"success": False, "message": "文件不存在"}, 404
+    except Exception as e:
+        return {"success": False, "message": str(e)}, 500
+
+
+@app.route('/delete_folder/<path:folder_path>', methods=['POST'])
+def delete_folder(folder_path):
+    """
+    删除文件夹
+    
+    Args:
+        folder_path (str): 要删除的文件夹路径
+    
+    Returns:
+        JSON响应
+    """
+    directory = app.config['DOWNLOAD_FOLDER']
+    folder_path = folder_path.replace("\\", "/")
+    full_path = os.path.normpath(os.path.join(directory, folder_path))
+    
+    # 安全检查：确保要删除的文件夹在指定目录内
+    if not full_path.startswith(directory):
+        return {"success": False, "message": "访问被拒绝"}, 403
+    
+    try:
+        if os.path.exists(full_path) and os.path.isdir(full_path):
+            shutil.rmtree(full_path)  # 递归删除文件夹及其内容
+            return {"success": True, "message": "文件夹已删除"}
+        else:
+            return {"success": False, "message": "文件夹不存在"}, 404
+    except Exception as e:
+        return {"success": False, "message": str(e)}, 500
 
 if __name__ == '__main__':
     # 检查是否提供了目录路径参数

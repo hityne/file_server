@@ -47,14 +47,16 @@
                     <h2 class="mb-3">文件夹</h2>
                     <div class="folder-list">
                         {% for folder in folders %}
-                            <div class="folder-item">
-                                <a href="{{ url_for('browse_files', 
-                                                   path=os.path.relpath(folder.path, 
-                                                                      app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}">
-                                    <i class="fas fa-folder"></i>
-                                    {{- folder.name -}}
-                                </a>
-                            </div>
+                        <div class="folder-item">
+                            <a href="{{ url_for('browse_files', path=os.path.relpath(folder.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}">
+                                <i class="fas fa-folder"></i>
+                                {{ folder.name }}
+                            </a>
+                            <button onclick="deleteFolder('{{ os.path.relpath(folder.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/') }}', this)" 
+                                    class="folder-delete" title="删除文件夹">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                         {% endfor %}
                     </div>
                 </section>
@@ -76,22 +78,29 @@
                             </thead>
                             <tbody>
                                 {% for file in files %}
-                                    <tr>
-                                        <td>{{ file.name }}</td>
-                                        <td>{{ file.size }}</td>
-                                        <td>{{ file.mtime }}</td>
-                                        <td>
-                                            <a href="{{ url_for('download_file', 
-                                                               filename=os.path.relpath(file.path, 
-                                                                                      app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" 
+                                <tr>
+                                    <td>{{ file.name }}</td>
+                                    <td>{{ file.size }}</td>
+                                    <td>{{ file.mtime }}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{{ url_for('download_file', filename=os.path.relpath(file.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" 
                                                class="download-btn">
-                                                <i class="fas fa-download"></i> 下载
+                                                <i class="fas fa-download"></i>
+                                                <span>下载</span>
                                             </a>
-                                        </td>
-                                    </tr>
+                                            <button onclick="deleteFile('{{ os.path.relpath(file.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/') }}', this)" 
+                                                    class="delete-btn">
+                                                <i class="fas fa-trash"></i>
+                                                <span>删除</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                        
                     </div>
                 </section>
             {% endif %}
@@ -115,6 +124,56 @@
     </footer>
 
     <!-- JavaScript -->
+    <script>
+        function deleteFile(filename, button) {
+            if (!confirm('确定要删除这个文件吗？')) {
+                return;
+            }
+        
+            fetch(`/delete/${filename}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 删除成功，移除对应的表格行
+                    button.closest('tr').remove();
+                } else {
+                    alert(data.message || '删除失败');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('删除失败');
+            });
+        }
+    </script>
+
+<script>
+    function deleteFolder(path, button) {
+        if (!confirm('确定要删除这个文件夹吗？文件夹内的所有内容都会被删除！')) {
+            return;
+        }
+    
+        fetch(`/delete_folder/${path}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 删除成功，移除对应的文件夹元素
+                button.closest('.folder-item').remove();
+            } else {
+                alert(data.message || '删除失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('删除失败');
+        });
+    }
+    </script>
+
     <script>
         function updateCurrentTime() {
             const currentTimeElement = document.getElementById('current-time');
