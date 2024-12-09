@@ -215,3 +215,66 @@ td a {
         word-break: break-word;
     }
 }
+
+/* 文件表格列宽调整 */
+.file-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+}
+
+.file-table th:first-child {
+    width: 35%;        /* 文件名列宽度 */
+}
+
+.file-table th:nth-child(2) {
+    width: 15%;        /* 大小列宽度 */
+}
+
+.file-table th:nth-child(3) {
+    width: 25%;        /* 修改时间列宽度 */
+}
+
+.file-table th:last-child {
+    width: 25%;        /* 操作列宽度 */
+}
+
+/* 操作按钮样式 */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.download-btn, .delete-btn {
+    padding: 0.35rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    white-space: nowrap;
+    height: 32px;
+    min-width: 76px;
+}
+
+.download-btn {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.download-btn:hover {
+    background-color: #27ae60;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+    color: white;
+}
