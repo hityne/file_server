@@ -1,7 +1,8 @@
 import os, sys
-from flask import Flask, render_template, send_from_directory, abort, request, current_app
+from flask import Flask, render_template, send_from_directory, abort, request, current_app, jsonify
 from builtins import len  # 导入 len 函数
 import time, datetime, shutil
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -165,6 +166,88 @@ def delete_folder(folder_path):
             return {"success": False, "message": "文件夹不存在"}, 404
     except Exception as e:
         return {"success": False, "message": str(e)}, 500
+
+@app.route('/create_folder', methods=['POST'])
+def create_folder():
+    """创建新文件夹"""
+    parent_path = request.form.get('path', '')
+    folder_name = request.form.get('name', '').strip()
+    
+    if not folder_name:
+        return jsonify({"success": False, "message": "文件夹名称不能为空"}), 400
+        
+    # 构建完整路径
+    directory = app.config['DOWNLOAD_FOLDER']
+    full_path = os.path.normpath(os.path.join(directory, parent_path, folder_name))
+    
+    # 安全检查：确保新建的文件夹在指定目录内
+    if not os.path.normpath(full_path).startswith(directory):
+        return jsonify({"success": False, "message": "非法路径"}), 403
+        
+    try:
+        if os.path.exists(full_path):
+            return jsonify({"success": False, "message": "文件夹已存在"}), 400
+            
+        os.makedirs(full_path)
+        return jsonify({"success": True, "message": "文件夹创建成功"})
+    except Exception as e:
+        print(f"创建文件夹失败: {str(e)}")  # 添加错误日志
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    """上传文件"""
+    if 'file' not in request.files:
+        return jsonify({"success": False, "message": "没有文件被上传"}), 400
+        
+    file = request.files['file']
+    current_path = request.form.get('path', '')
+    
+    if file.filename == '':
+        return jsonify({"success": False, "message": "未选择文件"}), 400
+        
+    if file:
+        filename = secure_filename(file.filename)  # 确保文件名安全
+        upload_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], current_path)
+        
+        # 确保上传路径存在
+        if not os.path.exists(upload_folder):
+            try:
+                os.makedirs(upload_folder)
+            except Exception as e:
+                return jsonify({"success": False, "message": f"创建目录失败: {str(e)}"}), 500
+        
+        # 安全检查：确保上传路径在允许的目录内
+        if not os.path.normpath(upload_folder).startswith(app.config['DOWNLOAD_FOLDER']):
+            return jsonify({"success": False, "message": "非法上传路径"}), 403
+            
+        try:
+            file_path = os.path.join(upload_folder, filename)
+            file.save(file_path)
+            return jsonify({"success": True, "message": "文件上传成功"})
+        except Exception as e:
+            print(f"文件上传失败: {str(e)}")  # 添加错误日志
+            return jsonify({"success": False, "message": f"文件上传失败: {str(e)}"}), 500
+
+    return jsonify({"success": False, "message": "未知错误"}), 400
+
+@app.route('/check_file_exists', methods=['POST'])
+def check_file_exists():
+    """检查文件是否存在"""
+    current_path = request.form.get('path', '')
+    filename = request.form.get('filename', '')
+    
+    if not filename:
+        return jsonify({"success": False, "message": "未提供文件名"}), 400
+        
+    full_path = os.path.join(app.config['DOWNLOAD_FOLDER'], current_path, filename)
+    
+    # 安全检查
+    if not os.path.normpath(full_path).startswith(app.config['DOWNLOAD_FOLDER']):
+        return jsonify({"success": False, "message": "非法路径"}), 403
+        
+    exists = os.path.exists(full_path)
+    return jsonify({"success": True, "exists": exists})
 
 if __name__ == '__main__':
     # 检查是否提供了目录路径参数
