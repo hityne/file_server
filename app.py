@@ -193,6 +193,14 @@ def create_folder():
     except Exception as e:
         print(f"创建文件夹失败: {str(e)}")  # 添加错误日志
         return jsonify({"success": False, "message": str(e)}), 500
+    
+def safe_filename(filename):
+    """自定义的文件名安全检查，保留中文字符"""
+    # 替换不安全的字符
+    unsafe_chars = '/\\:*?"<>|'
+    for char in unsafe_chars:
+        filename = filename.replace(char, '_')
+    return filename.strip()
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -207,7 +215,8 @@ def upload_file():
         return jsonify({"success": False, "message": "未选择文件"}), 400
         
     if file:
-        filename = secure_filename(file.filename)  # 确保文件名安全
+        # 使用原始文件名，不进行安全化处理
+        filename = safe_filename(file.filename)
         upload_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], current_path)
         
         # 确保上传路径存在
@@ -222,11 +231,12 @@ def upload_file():
             return jsonify({"success": False, "message": "非法上传路径"}), 403
             
         try:
+            # 使用原始文件名保存文件
             file_path = os.path.join(upload_folder, filename)
             file.save(file_path)
             return jsonify({"success": True, "message": "文件上传成功"})
         except Exception as e:
-            print(f"文件上传失败: {str(e)}")  # 添加错误日志
+            print(f"文件上传失败: {str(e)}")
             return jsonify({"success": False, "message": f"文件上传失败: {str(e)}"}), 500
 
     return jsonify({"success": False, "message": "未知错误"}), 400
