@@ -1,10 +1,13 @@
 import os, sys
-from flask import Flask, render_template, send_from_directory, abort, request, current_app, jsonify
+from flask import Flask, render_template, send_from_directory, abort, request, current_app, jsonify, Response
 from builtins import len  # 导入 len 函数
 import time, datetime, shutil
 from werkzeug.utils import secure_filename
+from tools.tools import is_browser_viewable, get_file_icon, safe_filename
+from urllib.parse import quote
 
 app = Flask(__name__)
+
 
 def get_directory_contents(directory):
     """
@@ -37,7 +40,9 @@ def get_directory_contents(directory):
                     'name': entry,
                     'size': size_str,
                     'mtime': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(file_stats.st_mtime)),  # 添加修改时间
-                    'path': entry_path
+                    'path': entry_path,
+                    'icon': get_file_icon(entry),  # 添加图标类名
+                    'viewable': is_browser_viewable(entry)  # 添加是否可预览标记
                 })
             elif os.path.isdir(entry_path):
                 folders.append({
@@ -103,11 +108,7 @@ def download_file(filename):
         abort(403)  # forbidden
     
     try:
-        print('here')
-        if filename.endswith('.pdf') or filename.endswith('.mp4'):
-            return send_from_directory(directory, filename, as_attachment=False)
-        else:
-            return send_from_directory(directory, filename, as_attachment=True)
+        return send_from_directory(directory, filename, as_attachment=True)
     except FileNotFoundError:
         return "文件未找到", 404
 
@@ -196,14 +197,6 @@ def create_folder():
     except Exception as e:
         print(f"创建文件夹失败: {str(e)}")  # 添加错误日志
         return jsonify({"success": False, "message": str(e)}), 500
-    
-def safe_filename(filename):
-    """自定义的文件名安全检查，保留中文字符"""
-    # 替换不安全的字符
-    unsafe_chars = '/\\:*?"<>|'
-    for char in unsafe_chars:
-        filename = filename.replace(char, '_')
-    return filename.strip()
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -261,6 +254,109 @@ def check_file_exists():
         
     exists = os.path.exists(full_path)
     return jsonify({"success": True, "exists": exists})
+
+@app.route('/view/<path:filename>')
+def view_file(filename):
+    """
+    在浏览器中直接查看文件，使用流式传输并支持范围请求
+    """
+    directory = app.config['DOWNLOAD_FOLDER']
+    filename = filename.replace("\\", "/")
+    filepath = os.path.normpath(os.path.join(directory, filename))
+    
+    # 安全检查：确保文件在指定目录内
+    if not filepath.startswith(directory):
+        abort(403)
+    
+    try:
+        # 如果不是可预览的文件类型，则转为下载
+        if not is_browser_viewable(filename):
+            return send_from_directory(directory, filename, as_attachment=True)
+
+        # 获取文件 MIME 类型
+        mime_type = {
+            'pdf': 'application/pdf',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png',
+            'gif': 'image/gif',
+            'mp4': 'video/mp4',
+            'webm': 'video/webm',
+            'mp3': 'audio/mpeg',
+            'wav': 'audio/wav',
+            'txt': 'text/plain',
+            'md': 'text/plain',
+        }.get(filename.lower().split('.')[-1], 'application/octet-stream')
+        
+        file_size = os.path.getsize(filepath)
+        
+        # 处理范围请求
+        range_header = request.headers.get('Range', None)
+        if range_header:
+            byte_start, byte_end = range_header.replace('bytes=', '').split('-')
+            byte_start = int(byte_start)
+            if byte_end:
+                byte_end = int(byte_end)
+            else:
+                byte_end = file_size - 1
+            
+            if byte_start >= file_size:
+                return 'Requested range not satisfiable', 416
+            
+            # 确保 byte_end 不超过文件大小
+            byte_end = min(byte_end, file_size - 1)
+            length = byte_end - byte_start + 1
+            
+            def generate_range():
+                with open(filepath, 'rb') as f:
+                    f.seek(byte_start)
+                    remaining = length
+                    while remaining > 0:
+                        chunk_size = min(remaining, 1024 * 1024)  # 每次最多读取1MB
+                        data = f.read(chunk_size)
+                        if not data:
+                            break
+                        remaining -= len(data)
+                        yield data
+            
+            response = Response(
+                generate_range(),
+                206,  # Partial Content
+                mimetype=mime_type,
+                direct_passthrough=True
+            )
+            response.headers['Content-Range'] = f'bytes {byte_start}-{byte_end}/{file_size}'
+            response.headers['Accept-Ranges'] = 'bytes'
+            response.headers['Content-Length'] = str(length)
+        else:
+            # 非范围请求，返回完整文件
+            def generate():
+                with open(filepath, 'rb') as f:
+                    while True:
+                        chunk = f.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        yield chunk
+            
+            response = Response(
+                generate(),
+                mimetype=mime_type,
+                direct_passthrough=True
+            )
+            response.headers['Accept-Ranges'] = 'bytes'
+            response.headers['Content-Length'] = str(file_size)
+        
+        # 对文件名进行 URL 编码
+        encoded_filename = quote(os.path.basename(filename))
+        response.headers['Content-Disposition'] = f"inline; filename*=UTF-8''{encoded_filename}"
+        
+        return response
+        
+    except FileNotFoundError:
+        return "文件未找到", 404
+    except Exception as e:
+        print(f"文件访问错误: {str(e)}")  # 打印具体错误信息以便调试
+        return "文件访问错误", 500
 
 if __name__ == '__main__':
     # 检查是否提供了目录路径参数

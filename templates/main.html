@@ -18,6 +18,9 @@
         <!-- 导航头部 -->
         <header class="file-header">
             <h1>
+                <a href="{{ url_for('browse_files', path='/') }}" class="home-icon" title="返回主页">
+                    <i class="fas fa-home"></i>
+                </a>
                 <a href="{{ url_for('browse_files', path='/') }}">根目录/</a>
                 {% for part in current_path.split('/') %}
                     {% if loop.last %}
@@ -122,7 +125,24 @@
                             <tbody>
                                 {% for file in files %}
                                 <tr>
-                                    <td>{{ file.name }}</td>
+                                    <td>
+                                        <span class="file-name">
+                                            <i class="fas {{ file.icon }}" aria-hidden="true"></i>
+                                            {% if file.viewable %}
+                                                <a href="{{ url_for('view_file', filename=os.path.relpath(file.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" 
+                                                   class="file-link" 
+                                                   target="_blank">
+                                                    {{ file.name }}
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ url_for('download_file', filename=os.path.relpath(file.path, app.config['DOWNLOAD_FOLDER']).replace('\\', '/')) }}" 
+                                                   class="file-link" 
+                                                   download>
+                                                    {{ file.name }}
+                                                </a>
+                                            {% endif %}
+                                        </span>
+                                    </td>
                                     <td>{{ file.size }}</td>
                                     <td>{{ file.mtime }}</td>
                                     <td>

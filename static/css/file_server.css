@@ -67,6 +67,23 @@ body {
     text-decoration: none;
 }
 
+.home-icon {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.home-icon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.home-icon i {
+    font-size: 1.2rem;
+    color: white;
+}
+
 /* Folder and File sections */
 .folder-section,
 .file-section {
@@ -484,4 +501,92 @@ td a {
 
 .btn-secondary:hover {
     background-color: #7f8c8d;
+}
+
+/* 文件名和图标的基础样式 */
+.file-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-name i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* 为不同类型的文件图标设置不同的颜色 */
+.file-name i.fa-file-word,
+.file-name i.fa-file-word-o {
+    color: #2b579a;
+}
+
+.file-name i.fa-file-pdf,
+.file-name i.fa-file-pdf-o {
+    color: #f40f02;
+}
+
+.file-name i.fa-file-excel,
+.file-name i.fa-file-excel-o {
+    color: #217346;
+}
+
+.file-name i.fa-file-powerpoint,
+.file-name i.fa-file-powerpoint-o {
+    color: #d24726;
+}
+
+.file-name i.fa-file-audio,
+.file-name i.fa-file-audio-o {
+    color: #1ed760;
+}
+
+.file-name i.fa-file-video,
+.file-name i.fa-file-video-o {
+    color: #ff0000;
+}
+
+.file-name i.fa-file-code,
+.file-name i.fa-file-code-o {
+    color: #007acc;
+}
+
+.file-name i.fa-file-zipper,
+.file-name i.fa-file-archive,
+.file-name i.fa-file-archive-o {
+    color: #f7b731;
+}
+
+.file-name i.fa-image,
+.file-name i.fa-file-image,
+.file-name i.fa-file-image-o {
+    color: #e056fd;
+}
+
+.file-name i.fa-gears,
+.file-name i.fa-cogs {
+    color: #ff7f50;
+}
+
+.file-name i.fa-file-lines,
+.file-name i.fa-file-text,
+.file-name i.fa-file-text-o {
+    color: #6c757d;
+}
+
+/* 默认文件图标颜色 */
+.file-name i.fa-file {
+    color: #6c757d;
+}
+
+.file-link {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.file-link:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
 }
