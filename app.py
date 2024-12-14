@@ -104,7 +104,10 @@ def download_file(filename):
     
     try:
         print('here')
-        return send_from_directory(directory, filename, as_attachment=True)
+        if filename.endswith('.pdf') or filename.endswith('.mp4'):
+            return send_from_directory(directory, filename, as_attachment=False)
+        else:
+            return send_from_directory(directory, filename, as_attachment=True)
     except FileNotFoundError:
         return "文件未找到", 404
 
