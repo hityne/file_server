@@ -21,18 +21,20 @@
                 <a href="{{ url_for('browse_files', path='/') }}" class="home-icon" title="返回主页">
                     <i class="fas fa-home"></i>
                 </a>
-                <a href="{{ url_for('browse_files', path='/') }}">根目录/</a>
+                <a href="{{ url_for('browse_files', path='/') }}">云盘</a>
                 {% for part in current_path.split('/') %}
                     {% if loop.last %}
                         <a href="{{ url_for('browse_files', path=current_path) }}">
-                            {{- part -}}
+                            {%- if part -%}<span class="path-icon">></span><span style="font-weight: bold;">{{- part -}}</span>{%- endif -%}
                         </a>
                     {% else %}
                         <a href="{{ url_for('browse_files', path='/'.join(current_path.split('/')[0:loop.index])) }}">
-                            {{- part -}}/
-                        </a>
+                            <span class="path-icon">></span>{{- part -}}
                     {% endif %}
                 {% endfor %}
+                <a href="{{ url_for('browse_files', path=current_path) }}" class="refresh-icon" title="刷新页面">
+                    <i class="fas fa-sync-alt"></i>
+                </a>
             </h1>
             <div class="dropdown">
                 <button class="dropdown-btn" onclick="toggleDropdown()">

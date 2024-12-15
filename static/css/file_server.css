@@ -65,6 +65,34 @@ body {
 .file-header h1 a {
     color: aliceblue;
     text-decoration: none;
+    padding-left:0;
+    font-size: 22px;
+}
+
+.path-icon{
+    margin-right:2px;
+}
+
+.refresh-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+
+.refresh-icon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.refresh-icon i {
+    font-size: 1.1rem;
+    color: white;
+}
+
+.refresh-icon:hover i {
+    transform: rotate(180deg);
 }
 
 .home-icon {
